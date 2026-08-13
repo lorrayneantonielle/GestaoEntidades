@@ -1,0 +1,811 @@
+openapi: 3.0.3
+info:
+  title: MLBEntidades API
+  version: "1.0"
+  description: >
+    Contrato da API do MLBEntidades (Princípio II da constituição: contrato definido
+    antes da implementação). Endpoints administrativos exigem JWT Bearer com role
+    apropriada; endpoints sob /public/ não exigem autenticação.
+servers:
+  - url: /api/v1
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: auth
+  - name: familias
+  - name: membros
+  - name: documentos
+  - name: unidades
+  - name: obra
+  - name: mutirao
+  - name: dashboard
+  - name: public
+
+paths:
+  /auth/login:
+    post:
+      tags: [auth]
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginCommand' }
+      responses:
+        '200':
+          description: Autenticado com sucesso
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TokenResponse' }
+        '401': { $ref: '#/components/responses/ProblemDetails' }
+
+  /auth/refresh-token:
+    post:
+      tags: [auth]
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RefreshTokenCommand' }
+      responses:
+        '200':
+          description: Novo par access/refresh token (rotação — token anterior invalidado)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TokenResponse' }
+        '401': { $ref: '#/components/responses/ProblemDetails' }
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      operationId: logout
+      responses:
+        '204': { description: Sessão encerrada, refresh token revogado }
+
+  /familias:
+    get:
+      tags: [familias]
+      operationId: listFamilias
+      description: Lista/busca famílias com filtros (FR-014). Todos os perfis autenticados visualizam todos os campos (FR-031).
+      parameters:
+        - { name: status, in: query, schema: { $ref: '#/components/schemas/FamiliaStatus' } }
+        - { name: nome, in: query, schema: { type: string } }
+        - { name: numeroMembros, in: query, schema: { type: integer } }
+        - { name: page, in: query, schema: { type: integer, default: 1 } }
+        - { name: pageSize, in: query, schema: { type: integer, default: 20 } }
+      responses:
+        '200':
+          description: Lista paginada de famílias
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/FamiliaResponse' } }
+                  total: { type: integer }
+    post:
+      tags: [familias]
+      operationId: createFamilia
+      description: Cadastra família (FR-008). Roles AdminGeral, AssistenteSocial.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FamiliaCreateCommand' }
+      responses:
+        '201':
+          description: Família criada com status PreCadastro
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FamiliaResponse' }
+        '400': { $ref: '#/components/responses/ProblemDetails' }
+        '409': { $ref: '#/components/responses/ProblemDetails' }
+
+  /familias/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    get:
+      tags: [familias]
+      operationId: getFamilia
+      responses:
+        '200':
+          description: Detalhe da família, incluindo campos sensíveis (FR-031)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FamiliaResponse' }
+        '404': { $ref: '#/components/responses/ProblemDetails' }
+    put:
+      tags: [familias]
+      operationId: updateFamilia
+      description: Atualiza dados cadastrais. Roles AdminGeral, AssistenteSocial.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FamiliaUpdateCommand' }
+      responses:
+        '200':
+          description: Família atualizada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FamiliaResponse' }
+        '400': { $ref: '#/components/responses/ProblemDetails' }
+        '409': { $ref: '#/components/responses/ProblemDetails' }
+
+  /familias/{id}/status:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    patch:
+      tags: [familias]
+      operationId: updateFamiliaStatus
+      description: >
+        Avança ou reverte o status da família (FR-010, FR-011, FR-012, FR-013,
+        FR-032). Roles AdminGeral, AssistenteSocial.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FamiliaStatusUpdateCommand' }
+      responses:
+        '200':
+          description: Transição aplicada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FamiliaResponse' }
+        '400':
+          description: Transição bloqueada (ex.: documentação pendente — FR-011)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProblemDetails' }
+
+  /membros:
+    get:
+      tags: [membros]
+      operationId: listMembrosPorFamilia
+      parameters:
+        - { name: familiaId, in: query, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Membros da família
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/MembroResponse' } }
+    post:
+      tags: [membros]
+      operationId: createMembro
+      description: Cria membro (FR-033 valida unicidade de CPF entre famílias ativas).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MembroCommand' }
+      responses:
+        '201':
+          description: Membro criado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MembroResponse' }
+        '409':
+          description: CPF já vinculado a outra família ativa (FR-033)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProblemDetails' }
+
+  /membros/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    put:
+      tags: [membros]
+      operationId: updateMembro
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MembroCommand' }
+      responses:
+        '200':
+          description: Membro atualizado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MembroResponse' }
+    delete:
+      tags: [membros]
+      operationId: deleteMembro
+      responses:
+        '204': { description: Membro removido }
+
+  /documentos:
+    get:
+      tags: [documentos]
+      operationId: listDocumentosPorFamilia
+      parameters:
+        - { name: familiaId, in: query, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Documentos da família e seus status (FR-009)
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/DocumentoResponse' } }
+    post:
+      tags: [documentos]
+      operationId: uploadDocumento
+      description: Upload de documento (multipart/form-data), armazenado em disco local (research.md §5).
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                familiaId: { type: string, format: uuid }
+                tipo: { $ref: '#/components/schemas/DocumentoTipo' }
+                arquivo: { type: string, format: binary }
+              required: [familiaId, tipo, arquivo]
+      responses:
+        '201':
+          description: Documento registrado/atualizado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DocumentoResponse' }
+
+  /unidades:
+    get:
+      tags: [unidades]
+      operationId: listUnidades
+      description: Mapa de ocupação (FR-019)
+      parameters:
+        - { name: status, in: query, schema: { $ref: '#/components/schemas/UnidadeStatus' } }
+      responses:
+        '200':
+          description: Lista de unidades
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/UnidadeResponse' } }
+    post:
+      tags: [unidades]
+      operationId: createUnidade
+      description: Cadastra unidade (FR-015). Roles AdminGeral, TecnicoObra.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UnidadeCommand' }
+      responses:
+        '201':
+          description: Unidade criada com status Livre
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UnidadeResponse' }
+
+  /unidades/{id}/atribuicao:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    put:
+      tags: [unidades]
+      operationId: atribuirUnidade
+      description: >
+        Atribui unidade a família Aprovada+ (FR-016, FR-017, FR-018). Roles
+        AdminGeral, TecnicoObra.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                familiaId: { type: string, format: uuid }
+              required: [familiaId]
+      responses:
+        '200':
+          description: Unidade atribuída
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UnidadeResponse' }
+        '409':
+          description: Unidade já reservada/ocupada, ou família não está Aprovada+ (FR-016, FR-017)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProblemDetails' }
+
+  /obra/etapas:
+    get:
+      tags: [obra]
+      operationId: listEtapas
+      responses:
+        '200':
+          description: Etapas da obra e percentuais (FR-020, FR-021)
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/EtapaObraResponse' } }
+    post:
+      tags: [obra]
+      operationId: createEtapa
+      description: Roles AdminGeral, TecnicoObra.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EtapaObraCommand' }
+      responses:
+        '201':
+          description: Etapa criada com percentual 0
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EtapaObraResponse' }
+
+  /obra/etapas/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    patch:
+      tags: [obra]
+      operationId: updateEtapaPercentual
+      description: Atualiza percentual de conclusão (FR-021). Roles AdminGeral, TecnicoObra.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                percentualConclusao: { type: number, format: decimal, minimum: 0, maximum: 100 }
+              required: [percentualConclusao]
+      responses:
+        '200':
+          description: Etapa atualizada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EtapaObraResponse' }
+
+  /obra/medicoes:
+    get:
+      tags: [obra]
+      operationId: listMedicoes
+      parameters:
+        - { name: etapaObraId, in: query, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Medições registradas (FR-022)
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/MedicaoResponse' } }
+    post:
+      tags: [obra]
+      operationId: createMedicao
+      description: Registro manual de medição do governo (research.md §10). Roles AdminGeral, TecnicoObra.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MedicaoCommand' }
+      responses:
+        '201':
+          description: Medição registrada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MedicaoResponse' }
+
+  /obra/ocorrencias:
+    get:
+      tags: [obra]
+      operationId: listOcorrencias
+      parameters:
+        - { name: etapaObraId, in: query, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Ocorrências técnicas (FR-023)
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/OcorrenciaResponse' } }
+    post:
+      tags: [obra]
+      operationId: createOcorrencia
+      description: Roles AdminGeral, TecnicoObra.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OcorrenciaCommand' }
+      responses:
+        '201':
+          description: Ocorrência registrada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OcorrenciaResponse' }
+
+  /mutirao/escalas:
+    get:
+      tags: [mutirao]
+      operationId: listEscalas
+      responses:
+        '200':
+          description: Escalas de mutirão (futuras e passadas)
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/MutiraoEscalaResponse' } }
+    post:
+      tags: [mutirao]
+      operationId: createEscala
+      description: Cria escala com vagas e pontuação por presença (FR-024). Roles AdminGeral, TecnicoObra.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MutiraoEscalaCommand' }
+      responses:
+        '201':
+          description: Escala criada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MutiraoEscalaResponse' }
+
+  /mutirao/presencas:
+    post:
+      tags: [mutirao]
+      operationId: registrarPresenca
+      description: >
+        Registra presença de família em uma escala, respeitando vagas (FR-025) e
+        concedendo a pontuação da escala (FR-026). Roles AdminGeral, TecnicoObra.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PresencaCommand' }
+      responses:
+        '201':
+          description: Presença registrada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PresencaResponse' }
+        '409':
+          description: Vagas esgotadas ou presença duplicada (FR-025)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProblemDetails' }
+
+  /mutirao/pontuacao:
+    get:
+      tags: [mutirao]
+      operationId: getPontuacaoPorFamilia
+      description: Relatório de pontuação e participação (FR-027, FR-028)
+      parameters:
+        - { name: familiaId, in: query, schema: { type: string, format: uuid } }
+        - { name: baixaParticipacao, in: query, schema: { type: boolean }, description: 'Filtra famílias sinalizadas por FR-028' }
+      responses:
+        '200':
+          description: Pontuação e histórico de presenças por família
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/PontuacaoFamiliaResponse' } }
+
+  /dashboard:
+    get:
+      tags: [dashboard]
+      operationId: getDashboard
+      description: Indicadores agregados, filtrados pelo role do usuário autenticado (FR-029, FR-030).
+      responses:
+        '200':
+          description: Conteúdo do dashboard conforme o perfil
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DashboardResponse' }
+
+  /public/status:
+    get:
+      tags: [public]
+      operationId: getPublicStatus
+      security: []
+      description: Informações gerais do empreendimento e progresso consolidado (FR-001, FR-002)
+      responses:
+        '200':
+          description: Status público
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PublicStatusResponse' }
+
+  /public/etapas:
+    get:
+      tags: [public]
+      operationId: getPublicEtapas
+      security: []
+      description: Progresso por etapa (FR-002)
+      responses:
+        '200':
+          description: Etapas públicas
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/PublicEtapaResponse' } }
+
+  /public/medicoes:
+    get:
+      tags: [public]
+      operationId: getPublicMedicoes
+      security: []
+      description: >
+        Histórico de medições aprovadas pelo governo, em ordem cronológica (FR-003).
+        Endpoint adicionado no plano — não constava na lista original de endpoints,
+        mas é exigido para satisfazer FR-003 (research.md §10).
+      responses:
+        '200':
+          description: Medições aprovadas
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/PublicMedicaoResponse' } }
+
+  /public/mutiroes:
+    get:
+      tags: [public]
+      operationId: getPublicMutiroes
+      security: []
+      description: >
+        Calendário de próximas atividades e mutirões (FR-004). Endpoint adicionado no
+        plano pelo mesmo motivo do /public/medicoes (research.md §10).
+      responses:
+        '200':
+          description: Próximos mutirões
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/PublicMutiraoResponse' } }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    ProblemDetails:
+      description: Erro no formato RFC 7807
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
+
+  schemas:
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string }
+
+    FamiliaStatus:
+      type: string
+      enum: [PreCadastro, EmAnalise, Aprovada, UnidadeAtribuida, EmConstrucao, Finalizada]
+
+    FamiliaCreateCommand:
+      type: object
+      properties:
+        rendaFamiliar: { type: number, format: decimal }
+        situacaoVulnerabilidade: { type: string }
+        membros: { type: array, items: { $ref: '#/components/schemas/MembroCommand' } }
+      required: [rendaFamiliar, situacaoVulnerabilidade]
+
+    FamiliaUpdateCommand:
+      type: object
+      properties:
+        rendaFamiliar: { type: number, format: decimal }
+        situacaoVulnerabilidade: { type: string }
+
+    FamiliaStatusUpdateCommand:
+      type: object
+      properties:
+        novoStatus: { $ref: '#/components/schemas/FamiliaStatus' }
+        motivo: { type: string, description: 'Obrigatório quando a transição é uma reversão/reprovação (FR-012)' }
+      required: [novoStatus]
+
+    FamiliaResponse:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        rendaFamiliar: { type: number, format: decimal }
+        situacaoVulnerabilidade: { type: string }
+        status: { $ref: '#/components/schemas/FamiliaStatus' }
+        pontuacaoAcumulada: { type: integer }
+        membros: { type: array, items: { $ref: '#/components/schemas/MembroResponse' } }
+        documentos: { type: array, items: { $ref: '#/components/schemas/DocumentoResponse' } }
+        unidadeHabitacionalId: { type: string, format: uuid, nullable: true }
+
+    MembroCommand:
+      type: object
+      properties:
+        familiaId: { type: string, format: uuid }
+        nome: { type: string }
+        dataNascimento: { type: string, format: date }
+        vinculo: { type: string }
+        cpf: { type: string, minLength: 11, maxLength: 11 }
+      required: [familiaId, nome, dataNascimento, vinculo, cpf]
+
+    MembroResponse:
+      allOf:
+        - $ref: '#/components/schemas/MembroCommand'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+
+    DocumentoTipo:
+      type: string
+      enum: [RG, CPF, ComprovanteRenda, Certidao]
+
+    DocumentoResponse:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        familiaId: { type: string, format: uuid }
+        tipo: { $ref: '#/components/schemas/DocumentoTipo' }
+        status: { type: string, enum: [Pendente, Recebido, Validado] }
+        arquivoPath: { type: string, nullable: true }
+
+    UnidadeStatus:
+      type: string
+      enum: [Livre, Reservada, Ocupada]
+
+    UnidadeCommand:
+      type: object
+      properties:
+        identificador: { type: string }
+        metragem: { type: number, format: decimal }
+        localizacaoTerreno: { type: string }
+      required: [identificador, metragem, localizacaoTerreno]
+
+    UnidadeResponse:
+      allOf:
+        - $ref: '#/components/schemas/UnidadeCommand'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            status: { $ref: '#/components/schemas/UnidadeStatus' }
+            familiaId: { type: string, format: uuid, nullable: true }
+
+    EtapaObraCommand:
+      type: object
+      properties:
+        nome: { type: string }
+        ordem: { type: integer }
+      required: [nome, ordem]
+
+    EtapaObraResponse:
+      allOf:
+        - $ref: '#/components/schemas/EtapaObraCommand'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            percentualConclusao: { type: number, format: decimal }
+
+    MedicaoCommand:
+      type: object
+      properties:
+        etapaObraId: { type: string, format: uuid }
+        data: { type: string, format: date }
+        statusAprovacao: { type: string, enum: [Aprovada, Pendente, Rejeitada] }
+        recursosLiberados: { type: number, format: decimal, nullable: true }
+        observacao: { type: string, nullable: true }
+      required: [etapaObraId, data, statusAprovacao]
+
+    MedicaoResponse:
+      allOf:
+        - $ref: '#/components/schemas/MedicaoCommand'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+
+    OcorrenciaCommand:
+      type: object
+      properties:
+        etapaObraId: { type: string, format: uuid }
+        descricao: { type: string }
+        data: { type: string, format: date }
+      required: [etapaObraId, descricao, data]
+
+    OcorrenciaResponse:
+      allOf:
+        - $ref: '#/components/schemas/OcorrenciaCommand'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+
+    MutiraoEscalaCommand:
+      type: object
+      properties:
+        data: { type: string, format: date }
+        turno: { type: string, enum: [Manha, Tarde, Integral] }
+        vagasTotais: { type: integer, minimum: 1 }
+        pontuacaoPorPresenca: { type: integer, minimum: 1 }
+      required: [data, turno, vagasTotais, pontuacaoPorPresenca]
+
+    MutiraoEscalaResponse:
+      allOf:
+        - $ref: '#/components/schemas/MutiraoEscalaCommand'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            vagasDisponiveis: { type: integer }
+
+    PresencaCommand:
+      type: object
+      properties:
+        mutiraoEscalaId: { type: string, format: uuid }
+        familiaId: { type: string, format: uuid }
+      required: [mutiraoEscalaId, familiaId]
+
+    PresencaResponse:
+      allOf:
+        - $ref: '#/components/schemas/PresencaCommand'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            dataRegistro: { type: string, format: date-time }
+            pontuacaoConcedida: { type: integer }
+
+    PontuacaoFamiliaResponse:
+      type: object
+      properties:
+        familiaId: { type: string, format: uuid }
+        pontuacaoAcumulada: { type: integer }
+        baixaParticipacao: { type: boolean, description: 'true quando abaixo de ConfiguracaoSistema.LimiteMinimoPontuacaoMutirao (FR-028)' }
+        presencas: { type: array, items: { $ref: '#/components/schemas/PresencaResponse' } }
+
+    DashboardResponse:
+      type: object
+      description: Forma do payload varia conforme o role do usuário autenticado (FR-030)
+      properties:
+        totalFamiliasPorStatus: { type: object, additionalProperties: { type: integer } }
+        percentualConclusaoObra: { type: number, format: decimal, nullable: true }
+        proximosMutiroes: { type: array, items: { $ref: '#/components/schemas/MutiraoEscalaResponse' }, nullable: true }
+        familiasBaixaParticipacao: { type: array, items: { type: string, format: uuid }, nullable: true }
+
+    PublicStatusResponse:
+      type: object
+      properties:
+        nomeEmpreendimento: { type: string }
+        descricao: { type: string }
+        percentualConclusaoGeral: { type: number, format: decimal }
+
+    PublicEtapaResponse:
+      type: object
+      properties:
+        nome: { type: string }
+        ordem: { type: integer }
+        percentualConclusao: { type: number, format: decimal }
+
+    PublicMedicaoResponse:
+      type: object
+      properties:
+        data: { type: string, format: date }
+        etapa: { type: string }
+        recursosLiberados: { type: number, format: decimal, nullable: true }
+
+    PublicMutiraoResponse:
+      type: object
+      properties:
+        data: { type: string, format: date }
+        turno: { type: string, enum: [Manha, Tarde, Integral] }
+        vagasDisponiveis: { type: integer }
+
+    LoginCommand:
+      type: object
+      properties:
+        email: { type: string, format: email }
+        senha: { type: string }
+      required: [email, senha]
+
+    RefreshTokenCommand:
+      type: object
+      properties:
+        refreshToken: { type: string }
+      required: [refreshToken]
+
+    TokenResponse:
+      type: object
+      properties:
+        accessToken: { type: string }
+        expiresAt: { type: string, format: date-time }
+        refreshToken: { type: string }
+        refreshTokenExpiresAt: { type: string, format: date-time }
+        role: { type: string, enum: [AdminGeral, AssistenteSocial, TecnicoObra] }
