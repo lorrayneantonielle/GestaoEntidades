@@ -78,62 +78,62 @@ tudo isso é pré-requisito de **todas** as user stories.
 
 **⚠️ CRITICAL**: Nenhuma user story pode começar antes desta fase estar completa.
 
-- [ ] T009 Criar `ApplicationDbContext` (EF Core) com integração ao ASP.NET Core Identity em
+- [X] T009 Criar `ApplicationDbContext` (EF Core) com integração ao ASP.NET Core Identity em
   `servico/ServicoMLBEntidades.Infrastructure/Persistence/ApplicationDbContext.cs`
-- [ ] T010 Changelog Liquibase para tabelas do Identity (`AspNetUsers`, `AspNetRoles`,
+- [X] T010 Changelog Liquibase para tabelas do Identity (`AspNetUsers`, `AspNetRoles`,
   `AspNetUserRoles` etc.) e seed dos 3 roles (`AdminGeral`, `AssistenteSocial`,
   `TecnicoObra`) em `servico/db/changelog/migrations/v1.0.0/001-identity.sql`
   (data-model.md → Usuario/Role/RefreshToken)
-- [ ] T011 [P] Changelog Liquibase para tabela `refresh_tokens` (Id, UsuarioId, TokenHash,
+- [X] T011 [P] Changelog Liquibase para tabela `refresh_tokens` (Id, UsuarioId, TokenHash,
   ExpiresAt, RevokedAt, CreatedAt) em
   `servico/db/changelog/migrations/v1.0.0/002-refresh-tokens.sql` (research.md §7)
-- [ ] T012 [P] Changelog Liquibase para tabela singleton `configuracao_sistema` com seed de
+- [X] T012 [P] Changelog Liquibase para tabela singleton `configuracao_sistema` com seed de
   `LimiteMinimoPontuacaoMutirao` padrão em
   `servico/db/changelog/migrations/v1.0.0/003-configuracao-sistema.sql` (data-model.md →
   ConfiguracaoSistema)
-- [ ] T013 [P] Criar entidade `RefreshToken` (Domain) e mapeamento EF Core (Infrastructure) em
+- [X] T013 [P] Criar entidade `RefreshToken` (Domain) e mapeamento EF Core (Infrastructure) em
   `servico/ServicoMLBEntidades.Domain/Entities/RefreshToken.cs` e
   `servico/ServicoMLBEntidades.Infrastructure/Persistence/Configurations/RefreshTokenConfiguration.cs`
-- [ ] T014 Implementar serviço de geração/validação de JWT (access token 8h) e rotação de
+- [X] T014 Implementar serviço de geração/validação de JWT (access token 8h) e rotação de
   refresh token (7 dias, invalida o anterior a cada uso) em
   `servico/ServicoMLBEntidades.Infrastructure/Auth/JwtTokenService.cs` (research.md §7,
   depende de T013)
-- [ ] T015 Implementar `AuthService` (login, refresh-token, logout) em
+- [X] T015 Implementar `AuthService` (login, refresh-token, logout) em
   `servico/ServicoMLBEntidades.Application/Auth/AuthService.cs` com
   `LoginCommand`/`RefreshTokenCommand` e validadores FluentValidation em
   `servico/ServicoMLBEntidades.Application/Auth/Validators/` (contracts/openapi.yaml
   `/auth/*`, depende de T014)
-- [ ] T016 Implementar `AuthController` (`POST /auth/login`, `POST /auth/refresh-token`,
+- [X] T016 Implementar `AuthController` (`POST /auth/login`, `POST /auth/refresh-token`,
   `POST /auth/logout`) em
   `servico/ServicoMLBEntidades/Controllers/AuthController.cs` (depende de T015)
-- [ ] T017 Configurar ASP.NET Core Identity + autenticação JWT Bearer + políticas de
+- [X] T017 Configurar ASP.NET Core Identity + autenticação JWT Bearer + políticas de
   autorização por role (`AdminGeral`, `AssistenteSocial`, `TecnicoObra`) em
   `servico/ServicoMLBEntidades/Program.cs` (constitution Princípio IV)
-- [ ] T018 [P] Configurar política de CORS nomeada (`http://localhost:5173` +
+- [X] T018 [P] Configurar política de CORS nomeada (`http://localhost:5173` +
   `Cors:ProductionOrigin`, sem wildcard) em `servico/ServicoMLBEntidades/Program.cs`
   (research.md §8)
-- [ ] T019 [P] Implementar middleware global de exceção mapeando erros para `ProblemDetails`
+- [X] T019 [P] Implementar middleware global de exceção mapeando erros para `ProblemDetails`
   (RFC 7807) em `servico/ServicoMLBEntidades/Middlewares/ProblemDetailsExceptionMiddleware.cs`
   (constitution Princípio II)
-- [ ] T020 [P] Configurar Swashbuckle/Swagger com suporte a JWT Bearer ("Authorize") em
+- [X] T020 [P] Configurar Swashbuckle/Swagger com suporte a JWT Bearer ("Authorize") em
   `servico/ServicoMLBEntidades/Program.cs` (quickstart.md §3)
-- [ ] T021 [P] Implementar `IDocumentoStorageService` (Domain) e implementação em disco local
+- [X] T021 [P] Implementar `IDocumentoStorageService` (Domain) e implementação em disco local
   lendo `Storage:DocumentosPath` (Infrastructure) em
   `servico/ServicoMLBEntidades.Domain/Services/IDocumentoStorageService.cs` e
   `servico/ServicoMLBEntidades.Infrastructure/Storage/LocalDocumentoStorageService.cs`
   (research.md §5)
-- [ ] T022 [P] Configurar plugin Vuetify (tema, ícones `@mdi/font`) em
+- [X] T022 [P] Configurar plugin Vuetify (tema, ícones `@mdi/font`) em
   `frontend/src/plugins/vuetify.ts` e registrar em `frontend/src/main.ts`
-- [ ] T023 [P] Configurar Vue Router com `AdminLayout.vue`/`PublicLayout.vue` e guards de
+- [X] T023 [P] Configurar Vue Router com `AdminLayout.vue`/`PublicLayout.vue` e guards de
   navegação (rotas `/admin/*` exigem autenticação; rotas públicas livres) em
   `frontend/src/router/index.ts`, `frontend/src/layouts/AdminLayout.vue`,
   `frontend/src/layouts/PublicLayout.vue` (constitution Princípio IV)
-- [ ] T024 [P] Configurar cliente HTTP Axios base (baseURL de `VITE_API_BASE_URL`,
+- [X] T024 [P] Configurar cliente HTTP Axios base (baseURL de `VITE_API_BASE_URL`,
   interceptor de JWT, retry de refresh em 401) em
   `frontend/src/services/httpClient.ts`
-- [ ] T025 [P] Configurar Pinia e `authStore` (login/logout/refresh, persistência do token)
+- [X] T025 [P] Configurar Pinia e `authStore` (login/logout/refresh, persistência do token)
   em `frontend/src/main.ts` e `frontend/src/stores/authStore.ts` (depende de T024)
-- [ ] T026 [P] Implementar `authService.ts`, composable `useAuth` e página de login em
+- [X] T026 [P] Implementar `authService.ts`, composable `useAuth` e página de login em
   `frontend/src/services/authService.ts`, `frontend/src/composables/useAuth.ts`,
   `frontend/src/pages/admin/LoginPage.vue` (depende de T025)
 
