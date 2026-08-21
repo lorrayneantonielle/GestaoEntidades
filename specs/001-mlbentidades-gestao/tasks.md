@@ -154,83 +154,83 @@ a listagem por status, nome e número de membros — sem depender de nenhum outr
 
 ### Implementation for User Story 1
 
-- [ ] T027 [P] [US1] Changelog Liquibase para tabelas `familias`, `membros`, `documentos`,
+- [X] T027 [P] [US1] Changelog Liquibase para tabelas `familias`, `membros`, `documentos`,
   `familia_status_historico` — incluindo índice único condicional de `cpf` entre membros de
   famílias não excluídas (FR-033) em
   `servico/db/changelog/migrations/v1.0.0/004-familias.sql` (data-model.md → Membro)
-- [ ] T028 [P] [US1] Criar entidade `Familia` + enum `FamiliaStatus` em
+- [X] T028 [P] [US1] Criar entidade `Familia` + enum `FamiliaStatus` em
   `servico/ServicoMLBEntidades.Domain/Entities/Familia.cs` e
   `servico/ServicoMLBEntidades.Domain/Enums/FamiliaStatus.cs`
-- [ ] T029 [P] [US1] Criar entidade `Membro` em
+- [X] T029 [P] [US1] Criar entidade `Membro` em
   `servico/ServicoMLBEntidades.Domain/Entities/Membro.cs`
-- [ ] T030 [P] [US1] Criar entidade `Documento` + enums `DocumentoTipo`/`DocumentoStatus` em
+- [X] T030 [P] [US1] Criar entidade `Documento` + enums `DocumentoTipo`/`DocumentoStatus` em
   `servico/ServicoMLBEntidades.Domain/Entities/Documento.cs`,
   `servico/ServicoMLBEntidades.Domain/Enums/DocumentoTipo.cs`,
   `servico/ServicoMLBEntidades.Domain/Enums/DocumentoStatus.cs`
-- [ ] T031 [P] [US1] Criar entidade `FamiliaStatusHistorico` em
+- [X] T031 [P] [US1] Criar entidade `FamiliaStatusHistorico` em
   `servico/ServicoMLBEntidades.Domain/Entities/FamiliaStatusHistorico.cs`
-- [ ] T032 [US1] Configurar mapeamentos EF Core (`IEntityTypeConfiguration`) de
+- [X] T032 [US1] Configurar mapeamentos EF Core (`IEntityTypeConfiguration`) de
   Familia/Membro/Documento/FamiliaStatusHistorico e registrar no `ApplicationDbContext` em
   `servico/ServicoMLBEntidades.Infrastructure/Persistence/Configurations/` (depende de
   T028-T031, T009)
-- [ ] T033 [P] [US1] Implementar `IFamiliaRepository` (Domain) e `FamiliaRepository` (EF Core,
+- [X] T033 [P] [US1] Implementar `IFamiliaRepository` (Domain) e `FamiliaRepository` (EF Core,
   Infrastructure) em
   `servico/ServicoMLBEntidades.Domain/Repositories/IFamiliaRepository.cs` e
   `servico/ServicoMLBEntidades.Infrastructure/Repositories/FamiliaRepository.cs` (depende de
   T032)
-- [ ] T034 [US1] Implementar `FamiliaService` (`CreateFamilia`, `UpdateFamilia`,
+- [X] T034 [US1] Implementar `FamiliaService` (`CreateFamilia`, `UpdateFamilia`,
   `ListFamilias` com filtros status/nome/numeroMembros, `GetFamilia`) em
   `servico/ServicoMLBEntidades.Application/Familias/FamiliaService.cs` (FR-008, FR-014,
   depende de T033)
-- [ ] T035 [US1] Implementar `FamiliaStatusService.UpdateStatus` (avanço bloqueado por
+- [X] T035 [US1] Implementar `FamiliaStatusService.UpdateStatus` (avanço bloqueado por
   documentação pendente FR-011, reversão exigindo motivo FR-012, liberação de unidade ao
   reverter FR-013, marcação manual `EmConstrucao→Finalizada` FR-032) em
   `servico/ServicoMLBEntidades.Application/Familias/FamiliaStatusService.cs` (depende de
   T033)
-- [ ] T036 [P] [US1] Implementar `FamiliaCreateCommand`/`FamiliaUpdateCommand`/
+- [X] T036 [P] [US1] Implementar `FamiliaCreateCommand`/`FamiliaUpdateCommand`/
   `FamiliaStatusUpdateCommand` + validadores FluentValidation em
   `servico/ServicoMLBEntidades.Application/Familias/Commands/` e
   `servico/ServicoMLBEntidades.Application/Familias/Validators/`
-- [ ] T037 [P] [US1] Implementar `MembroService` (criar/atualizar/excluir + bloqueio de CPF
+- [X] T037 [P] [US1] Implementar `MembroService` (criar/atualizar/excluir + bloqueio de CPF
   duplicado entre famílias ativas, FR-033) em
   `servico/ServicoMLBEntidades.Application/Membros/MembroService.cs` (depende de T033)
-- [ ] T038 [P] [US1] Implementar `MembroCommand` + validador FluentValidation (formato de CPF)
+- [X] T038 [P] [US1] Implementar `MembroCommand` + validador FluentValidation (formato de CPF)
   em `servico/ServicoMLBEntidades.Application/Membros/Validators/MembroCommandValidator.cs`
-- [ ] T039 [P] [US1] Implementar `DocumentoService` (upload via `IDocumentoStorageService`,
+- [X] T039 [P] [US1] Implementar `DocumentoService` (upload via `IDocumentoStorageService`,
   listagem por família, cálculo de completude documental) em
   `servico/ServicoMLBEntidades.Application/Documentos/DocumentoService.cs` (FR-009, depende
   de T021, T033)
-- [ ] T040 [P] [US1] Implementar validação de upload (tipo MIME, tamanho máximo) para
+- [X] T040 [P] [US1] Implementar validação de upload (tipo MIME, tamanho máximo) para
   `DocumentoCommand` em
   `servico/ServicoMLBEntidades.Application/Documentos/Validators/DocumentoCommandValidator.cs`
-- [ ] T041 [US1] Implementar `FamiliasController` (`GET/POST /familias`,
+- [X] T041 [US1] Implementar `FamiliasController` (`GET/POST /familias`,
   `GET/PUT /familias/{id}`, `PATCH /familias/{id}/status`) com
   `[Authorize(Roles = "AdminGeral,AssistenteSocial")]` em cadastro/edição e leitura liberada
   a qualquer perfil autenticado (FR-031) em
   `servico/ServicoMLBEntidades/Controllers/FamiliasController.cs` (depende de T034-T036)
-- [ ] T042 [US1] Implementar `MembrosController` (`GET/POST /membros`,
+- [X] T042 [US1] Implementar `MembrosController` (`GET/POST /membros`,
   `PUT/DELETE /membros/{id}`) em
   `servico/ServicoMLBEntidades/Controllers/MembrosController.cs` (depende de T037, T038)
-- [ ] T043 [US1] Implementar `DocumentosController` (`GET/POST /documentos`, multipart/form-data)
+- [X] T043 [US1] Implementar `DocumentosController` (`GET/POST /documentos`, multipart/form-data)
   em `servico/ServicoMLBEntidades/Controllers/DocumentosController.cs` (depende de T039, T040)
-- [ ] T044 [P] [US1] Criar tipos TS `Familia`, `Membro`, `Documento` em
+- [X] T044 [P] [US1] Criar tipos TS `Familia`, `Membro`, `Documento` em
   `frontend/src/types/familia.ts`
-- [ ] T045 [P] [US1] Implementar `familiaService.ts` (chamadas Axios) em
+- [X] T045 [P] [US1] Implementar `familiaService.ts` (chamadas Axios) em
   `frontend/src/services/familiaService.ts` (depende de T024, T044)
-- [ ] T046 [P] [US1] Implementar composable `useFamilias` em
+- [X] T046 [P] [US1] Implementar composable `useFamilias` em
   `frontend/src/composables/useFamilias.ts` (depende de T045)
-- [ ] T047 [P] [US1] Implementar `familiasStore` (Pinia) em
+- [X] T047 [P] [US1] Implementar `familiasStore` (Pinia) em
   `frontend/src/stores/familiasStore.ts` (depende de T045)
-- [ ] T048 [US1] Implementar página de listagem de famílias com filtros (status, nome,
+- [X] T048 [US1] Implementar página de listagem de famílias com filtros (status, nome,
   número de membros) em `frontend/src/pages/admin/familias/FamiliasListPage.vue` (depende
   de T046, T047)
-- [ ] T049 [US1] Implementar formulário de cadastro/edição de família (composição familiar,
+- [X] T049 [US1] Implementar formulário de cadastro/edição de família (composição familiar,
   renda, vulnerabilidade) em `frontend/src/pages/admin/familias/FamiliaFormPage.vue`
   (depende de T046)
-- [ ] T050 [US1] Implementar componente de workflow de status (avançar/reverter com motivo
+- [X] T050 [US1] Implementar componente de workflow de status (avançar/reverter com motivo
   obrigatório na reversão) em `frontend/src/components/admin/FamiliaStatusWorkflow.vue`
   (depende de T046)
-- [ ] T051 [US1] Implementar componente de checklist/upload de documentos obrigatórios em
+- [X] T051 [US1] Implementar componente de checklist/upload de documentos obrigatórios em
   `frontend/src/components/admin/FamiliaDocumentosChecklist.vue` (depende de T046)
 
 **Checkpoint**: User Story 1 completa e testável de forma independente (cadastro, documentos,
