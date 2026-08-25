@@ -249,55 +249,55 @@ vinculada a uma etapa e adicionar uma ocorrência técnica — isoladamente dos 
 
 ### Implementation for User Story 2
 
-- [ ] T052 [P] [US2] Changelog Liquibase para tabelas `etapas_obra`, `medicoes`,
+- [X] T052 [P] [US2] Changelog Liquibase para tabelas `etapas_obra`, `medicoes`,
   `ocorrencias` em `servico/db/changelog/migrations/v1.0.0/005-obra.sql`
-- [ ] T053 [P] [US2] Criar entidade `EtapaObra` em
+- [X] T053 [P] [US2] Criar entidade `EtapaObra` em
   `servico/ServicoMLBEntidades.Domain/Entities/EtapaObra.cs`
-- [ ] T054 [P] [US2] Criar entidade `Medicao` + enum `StatusAprovacao` em
+- [X] T054 [P] [US2] Criar entidade `Medicao` + enum `StatusAprovacao` em
   `servico/ServicoMLBEntidades.Domain/Entities/Medicao.cs` e
   `servico/ServicoMLBEntidades.Domain/Enums/StatusAprovacao.cs`
-- [ ] T055 [P] [US2] Criar entidade `Ocorrencia` em
+- [X] T055 [P] [US2] Criar entidade `Ocorrencia` em
   `servico/ServicoMLBEntidades.Domain/Entities/Ocorrencia.cs`
-- [ ] T056 [US2] Configurar mapeamentos EF Core de EtapaObra/Medicao/Ocorrencia e registrar
+- [X] T056 [US2] Configurar mapeamentos EF Core de EtapaObra/Medicao/Ocorrencia e registrar
   no `ApplicationDbContext` em
   `servico/ServicoMLBEntidades.Infrastructure/Persistence/Configurations/` (depende de
   T053-T055, T009)
-- [ ] T057 [P] [US2] Implementar `IEtapaObraRepository`/`IMedicaoRepository`/
+- [X] T057 [P] [US2] Implementar `IEtapaObraRepository`/`IMedicaoRepository`/
   `IOcorrenciaRepository` (Domain) e repositórios EF Core (Infrastructure) em
   `servico/ServicoMLBEntidades.Domain/Repositories/` e
   `servico/ServicoMLBEntidades.Infrastructure/Repositories/` (depende de T056)
-- [ ] T058 [US2] Implementar `EtapaObraService` (`CreateEtapa`, `UpdatePercentual`,
+- [X] T058 [US2] Implementar `EtapaObraService` (`CreateEtapa`, `UpdatePercentual`,
   `ListEtapas`) em `servico/ServicoMLBEntidades.Application/Obra/EtapaObraService.cs`
   (FR-020, FR-021, depende de T057)
-- [ ] T059 [P] [US2] Implementar `EtapaObraCommand` + validador FluentValidation em
+- [X] T059 [P] [US2] Implementar `EtapaObraCommand` + validador FluentValidation em
   `servico/ServicoMLBEntidades.Application/Obra/Validators/EtapaObraCommandValidator.cs`
-- [ ] T060 [US2] Implementar `MedicaoService` (registro manual, sinaliza divergência entre
+- [X] T060 [US2] Implementar `MedicaoService` (registro manual, sinaliza divergência entre
   percentual da etapa e medição aprovada) em
   `servico/ServicoMLBEntidades.Application/Obra/MedicaoService.cs` (FR-022, depende de T057)
-- [ ] T061 [P] [US2] Implementar `MedicaoCommand` + validador FluentValidation em
+- [X] T061 [P] [US2] Implementar `MedicaoCommand` + validador FluentValidation em
   `servico/ServicoMLBEntidades.Application/Obra/Validators/MedicaoCommandValidator.cs`
-- [ ] T062 [US2] Implementar `OcorrenciaService` em
+- [X] T062 [US2] Implementar `OcorrenciaService` em
   `servico/ServicoMLBEntidades.Application/Obra/OcorrenciaService.cs` (FR-023, depende de
   T057)
-- [ ] T063 [P] [US2] Implementar `OcorrenciaCommand` + validador FluentValidation em
+- [X] T063 [P] [US2] Implementar `OcorrenciaCommand` + validador FluentValidation em
   `servico/ServicoMLBEntidades.Application/Obra/Validators/OcorrenciaCommandValidator.cs`
-- [ ] T064 [US2] Implementar `ObraController` (`GET/POST /obra/etapas`,
+- [X] T064 [US2] Implementar `ObraController` (`GET/POST /obra/etapas`,
   `PATCH /obra/etapas/{id}`, `GET/POST /obra/medicoes`, `GET/POST /obra/ocorrencias`) com
   `[Authorize(Roles = "AdminGeral,TecnicoObra")]` em
   `servico/ServicoMLBEntidades/Controllers/ObraController.cs` (depende de T058-T063)
-- [ ] T065 [P] [US2] Criar tipos TS `EtapaObra`, `Medicao`, `Ocorrencia` em
+- [X] T065 [P] [US2] Criar tipos TS `EtapaObra`, `Medicao`, `Ocorrencia` em
   `frontend/src/types/obra.ts`
-- [ ] T066 [P] [US2] Implementar `obraService.ts` em `frontend/src/services/obraService.ts`
+- [X] T066 [P] [US2] Implementar `obraService.ts` em `frontend/src/services/obraService.ts`
   (depende de T024, T065)
-- [ ] T067 [P] [US2] Implementar composable `useObra` em `frontend/src/composables/useObra.ts`
+- [X] T067 [P] [US2] Implementar composable `useObra` em `frontend/src/composables/useObra.ts`
   (depende de T066)
-- [ ] T068 [P] [US2] Implementar `obraStore` (Pinia) em `frontend/src/stores/obraStore.ts`
+- [X] T068 [P] [US2] Implementar `obraStore` (Pinia) em `frontend/src/stores/obraStore.ts`
   (depende de T066)
-- [ ] T069 [US2] Implementar página de etapas da obra (listagem, cadastro, atualização de
+- [X] T069 [US2] Implementar página de etapas da obra (listagem, cadastro, atualização de
   percentual) em `frontend/src/pages/admin/obra/EtapasPage.vue` (depende de T067, T068)
-- [ ] T070 [US2] Implementar página de medições (registro manual, listagem por etapa) em
+- [X] T070 [US2] Implementar página de medições (registro manual, listagem por etapa) em
   `frontend/src/pages/admin/obra/MedicoesPage.vue` (depende de T067)
-- [ ] T071 [US2] Implementar componente/página de ocorrências técnicas em
+- [X] T071 [US2] Implementar componente/página de ocorrências técnicas em
   `frontend/src/pages/admin/obra/OcorrenciasPage.vue` (depende de T067)
 
 **Checkpoint**: User Stories 1 e 2 funcionam de forma independente.
