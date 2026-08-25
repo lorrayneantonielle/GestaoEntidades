@@ -315,28 +315,28 @@ futuros são exibidos corretamente com os dados publicados pela área administra
 
 ### Implementation for User Story 3
 
-- [ ] T072 [P] [US3] Implementar `PublicService` (`GetStatus`, `GetEtapas`,
+- [X] T072 [P] [US3] Implementar `PublicService` (`GetStatus`, `GetEtapas`,
   `GetMedicoesAprovadas`, `GetProximosMutiroes` — leituras agregadas via Dapper) em
   `servico/ServicoMLBEntidades.Application/Public/PublicService.cs` (FR-001 a FR-004,
   research.md §6/§10; depende das entidades de US2 (T053-T055) e US5 (T093-T094) já
   existirem no schema)
-- [ ] T073 [US3] Implementar `PublicController` (`GET /public/status`, `GET /public/etapas`,
+- [X] T073 [US3] Implementar `PublicController` (`GET /public/status`, `GET /public/etapas`,
   `GET /public/medicoes`, `GET /public/mutiroes`) com `[AllowAnonymous]` em
   `servico/ServicoMLBEntidades/Controllers/PublicController.cs` (depende de T072)
-- [ ] T074 [P] [US3] Criar tipos TS `PublicStatus`, `PublicEtapa`, `PublicMedicao`,
+- [X] T074 [P] [US3] Criar tipos TS `PublicStatus`, `PublicEtapa`, `PublicMedicao`,
   `PublicMutirao` em `frontend/src/types/public.ts`
-- [ ] T075 [P] [US3] Implementar `publicService.ts` em
+- [X] T075 [P] [US3] Implementar `publicService.ts` em
   `frontend/src/services/publicService.ts` (depende de T024, T074)
-- [ ] T076 [P] [US3] Implementar composable `usePublic` em
+- [X] T076 [P] [US3] Implementar composable `usePublic` em
   `frontend/src/composables/usePublic.ts` (depende de T075)
-- [ ] T077 [US3] Implementar landing page com informações gerais do empreendimento em
+- [X] T077 [US3] Implementar landing page com informações gerais do empreendimento em
   `frontend/src/pages/public/LandingPage.vue` (depende de T076, T023)
-- [ ] T078 [US3] Implementar seção de status da obra por etapa (com estado vazio informativo
+- [X] T078 [US3] Implementar seção de status da obra por etapa (com estado vazio informativo
   quando sem dados) na landing page em
   `frontend/src/components/public/StatusObraSection.vue` (depende de T076)
-- [ ] T079 [US3] Implementar seção de histórico de medições aprovadas (ordem cronológica, com
+- [X] T079 [US3] Implementar seção de histórico de medições aprovadas (ordem cronológica, com
   estado vazio) em `frontend/src/components/public/MedicoesSection.vue` (depende de T076)
-- [ ] T080 [US3] Implementar seção de calendário de próximos mutirões (com estado vazio) em
+- [X] T080 [US3] Implementar seção de calendário de próximos mutirões (com estado vazio) em
   `frontend/src/components/public/MutiroesCalendarSection.vue` (depende de T076)
 
 **Checkpoint**: Página pública funcional e consistente com os dados administrativos
@@ -355,43 +355,43 @@ unidades livres, reservadas e ocupadas.
 
 ### Implementation for User Story 4
 
-- [ ] T081 [P] [US4] Changelog Liquibase para tabela `unidades_habitacionais` (`identificador`
+- [X] T081 [P] [US4] Changelog Liquibase para tabela `unidades_habitacionais` (`identificador`
   único, índice único parcial em `familia_id` para status != Livre) em
   `servico/db/changelog/migrations/v1.0.0/006-unidades.sql` (FR-015, FR-017)
-- [ ] T082 [P] [US4] Criar entidade `UnidadeHabitacional` + enum `UnidadeStatus` em
+- [X] T082 [P] [US4] Criar entidade `UnidadeHabitacional` + enum `UnidadeStatus` em
   `servico/ServicoMLBEntidades.Domain/Entities/UnidadeHabitacional.cs` e
   `servico/ServicoMLBEntidades.Domain/Enums/UnidadeStatus.cs`
-- [ ] T083 [US4] Configurar mapeamento EF Core de `UnidadeHabitacional` e registrar no
+- [X] T083 [US4] Configurar mapeamento EF Core de `UnidadeHabitacional` e registrar no
   `ApplicationDbContext` em
   `servico/ServicoMLBEntidades.Infrastructure/Persistence/Configurations/UnidadeHabitacionalConfiguration.cs`
   (depende de T082, T009)
-- [ ] T084 [P] [US4] Implementar `IUnidadeRepository` (Domain) e `UnidadeRepository` (EF Core,
+- [X] T084 [P] [US4] Implementar `IUnidadeRepository` (Domain) e `UnidadeRepository` (EF Core,
   Infrastructure) em
   `servico/ServicoMLBEntidades.Domain/Repositories/IUnidadeRepository.cs` e
   `servico/ServicoMLBEntidades.Infrastructure/Repositories/UnidadeRepository.cs` (depende de
   T083)
-- [ ] T085 [US4] Implementar `UnidadeService` (`CreateUnidade`, `ListUnidades` para mapa de
+- [X] T085 [US4] Implementar `UnidadeService` (`CreateUnidade`, `ListUnidades` para mapa de
   ocupação, `AtribuirUnidade` validando `Familia.Status ∈ {Aprovada+}` FR-016, bloqueio de
   unidade não-Livre FR-017, avanço de `Familia.Status` para `UnidadeAtribuida` FR-018, em
   transação) em `servico/ServicoMLBEntidades.Application/Unidades/UnidadeService.cs`
   (depende de T033, T084)
-- [ ] T086 [P] [US4] Implementar `UnidadeCommand` + validador FluentValidation em
+- [X] T086 [P] [US4] Implementar `UnidadeCommand` + validador FluentValidation em
   `servico/ServicoMLBEntidades.Application/Unidades/Validators/UnidadeCommandValidator.cs`
-- [ ] T087 [US4] Implementar `UnidadesController` (`GET/POST /unidades`,
+- [X] T087 [US4] Implementar `UnidadesController` (`GET/POST /unidades`,
   `PUT /unidades/{id}/atribuicao`) com `[Authorize(Roles = "AdminGeral,TecnicoObra")]` em
   `servico/ServicoMLBEntidades/Controllers/UnidadesController.cs` (depende de T085, T086)
-- [ ] T088 [P] [US4] Criar tipos TS `UnidadeHabitacional` em
+- [X] T088 [P] [US4] Criar tipos TS `UnidadeHabitacional` em
   `frontend/src/types/unidade.ts`
-- [ ] T089 [P] [US4] Implementar `unidadeService.ts` em
+- [X] T089 [P] [US4] Implementar `unidadeService.ts` em
   `frontend/src/services/unidadeService.ts` (depende de T024, T088)
-- [ ] T090 [P] [US4] Implementar composable `useUnidades` em
+- [X] T090 [P] [US4] Implementar composable `useUnidades` em
   `frontend/src/composables/useUnidades.ts` (depende de T089)
-- [ ] T091 [P] [US4] Implementar `unidadesStore` (Pinia) em
+- [X] T091 [P] [US4] Implementar `unidadesStore` (Pinia) em
   `frontend/src/stores/unidadesStore.ts` (depende de T089)
-- [ ] T092 [US4] Implementar mapa de ocupação (unidades livres/reservadas/ocupadas
+- [X] T092 [US4] Implementar mapa de ocupação (unidades livres/reservadas/ocupadas
   visualmente diferenciadas) em `frontend/src/pages/admin/unidades/MapaOcupacaoPage.vue`
   (depende de T090, T091)
-- [ ] T093 [US4] Implementar fluxo de cadastro e atribuição de unidade a família aprovada em
+- [X] T093 [US4] Implementar fluxo de cadastro e atribuição de unidade a família aprovada em
   `frontend/src/pages/admin/unidades/UnidadeFormPage.vue` (depende de T090)
 
 **Checkpoint**: User Story 4 funcional; unidades cadastráveis isoladamente e atribuíveis a
@@ -411,53 +411,53 @@ sinalizada para o Assistente Social.
 
 ### Implementation for User Story 5
 
-- [ ] T094 [P] [US5] Changelog Liquibase para tabelas `mutirao_escalas` e `presencas` (par
+- [X] T094 [P] [US5] Changelog Liquibase para tabelas `mutirao_escalas` e `presencas` (par
   `mutirao_escala_id`+`familia_id` único) em
   `servico/db/changelog/migrations/v1.0.0/007-mutirao.sql` (FR-024, FR-025)
-- [ ] T095 [P] [US5] Criar entidade `MutiraoEscala` + enum `Turno` em
+- [X] T095 [P] [US5] Criar entidade `MutiraoEscala` + enum `Turno` em
   `servico/ServicoMLBEntidades.Domain/Entities/MutiraoEscala.cs` e
   `servico/ServicoMLBEntidades.Domain/Enums/Turno.cs`
-- [ ] T096 [P] [US5] Criar entidade `Presenca` em
+- [X] T096 [P] [US5] Criar entidade `Presenca` em
   `servico/ServicoMLBEntidades.Domain/Entities/Presenca.cs`
-- [ ] T097 [US5] Configurar mapeamentos EF Core de `MutiraoEscala`/`Presenca` e registrar no
+- [X] T097 [US5] Configurar mapeamentos EF Core de `MutiraoEscala`/`Presenca` e registrar no
   `ApplicationDbContext` em
   `servico/ServicoMLBEntidades.Infrastructure/Persistence/Configurations/` (depende de
   T095, T096, T009)
-- [ ] T098 [P] [US5] Implementar `IMutiraoEscalaRepository`/`IPresencaRepository` (Domain) e
+- [X] T098 [P] [US5] Implementar `IMutiraoEscalaRepository`/`IPresencaRepository` (Domain) e
   repositórios EF Core (Infrastructure) em
   `servico/ServicoMLBEntidades.Domain/Repositories/` e
   `servico/ServicoMLBEntidades.Infrastructure/Repositories/` (depende de T097)
-- [ ] T099 [US5] Implementar `MutiraoService` (`CreateEscala`, `ListEscalas` com
+- [X] T099 [US5] Implementar `MutiraoService` (`CreateEscala`, `ListEscalas` com
   `vagasDisponiveis`) em `servico/ServicoMLBEntidades.Application/Mutirao/MutiraoService.cs`
   (FR-024, depende de T098)
-- [ ] T100 [US5] Implementar `PresencaService.RegistrarPresenca` (bloqueio ao exceder vagas
+- [X] T100 [US5] Implementar `PresencaService.RegistrarPresenca` (bloqueio ao exceder vagas
   FR-025, bloqueio de presença duplicada, crédito de pontuação copiando
   `MutiraoEscala.PontuacaoPorPresenca` para `Presenca.PontuacaoConcedida` e somando em
   `Familia.PontuacaoAcumulada` FR-026) em
   `servico/ServicoMLBEntidades.Application/Mutirao/PresencaService.cs` (depende de T033,
   T098)
-- [ ] T101 [P] [US5] Implementar `MutiraoEscalaCommand` + `PresencaCommand` e validadores
+- [X] T101 [P] [US5] Implementar `MutiraoEscalaCommand` + `PresencaCommand` e validadores
   FluentValidation em `servico/ServicoMLBEntidades.Application/Mutirao/Validators/`
-- [ ] T102 [P] [US5] Implementar `PontuacaoService` (Dapper) — relatório por família com
+- [X] T102 [P] [US5] Implementar `PontuacaoService` (Dapper) — relatório por família com
   histórico de presenças, pontuação acumulada e flag `baixaParticipacao` a partir de
   `ConfiguracaoSistema.LimiteMinimoPontuacaoMutirao` (FR-027, FR-028) em
   `servico/ServicoMLBEntidades.Infrastructure/Queries/PontuacaoQueryService.cs` (depende de
   T012, T094)
-- [ ] T103 [US5] Implementar `MutiraoController` (`GET/POST /mutirao/escalas`,
+- [X] T103 [US5] Implementar `MutiraoController` (`GET/POST /mutirao/escalas`,
   `POST /mutirao/presencas`, `GET /mutirao/pontuacao`) com
   `[Authorize(Roles = "AdminGeral,TecnicoObra")]` para escritas em
   `servico/ServicoMLBEntidades/Controllers/MutiraoController.cs` (depende de T099-T102)
-- [ ] T104 [P] [US5] Criar tipos TS `MutiraoEscala`, `Presenca`, `PontuacaoFamilia` em
+- [X] T104 [P] [US5] Criar tipos TS `MutiraoEscala`, `Presenca`, `PontuacaoFamilia` em
   `frontend/src/types/mutirao.ts`
-- [ ] T105 [P] [US5] Implementar `mutiraoService.ts` em
+- [X] T105 [P] [US5] Implementar `mutiraoService.ts` em
   `frontend/src/services/mutiraoService.ts` (depende de T024, T104)
-- [ ] T106 [P] [US5] Implementar composable `useMutirao` em
+- [X] T106 [P] [US5] Implementar composable `useMutirao` em
   `frontend/src/composables/useMutirao.ts` (depende de T105)
-- [ ] T107 [P] [US5] Implementar `mutiraoStore` (Pinia) em
+- [X] T107 [P] [US5] Implementar `mutiraoStore` (Pinia) em
   `frontend/src/stores/mutiraoStore.ts` (depende de T105)
-- [ ] T108 [US5] Implementar página de escalas de mutirão (criação, listagem, vagas
+- [X] T108 [US5] Implementar página de escalas de mutirão (criação, listagem, vagas
   disponíveis) em `frontend/src/pages/admin/mutirao/EscalasPage.vue` (depende de T106, T107)
-- [ ] T109 [US5] Implementar registro de presença e relatório de pontuação/participação (com
+- [X] T109 [US5] Implementar registro de presença e relatório de pontuação/participação (com
   destaque de baixa participação) em
   `frontend/src/pages/admin/mutirao/PresencaPontuacaoPage.vue` (depende de T106)
 
